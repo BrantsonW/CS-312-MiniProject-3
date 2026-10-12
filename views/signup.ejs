@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIGN UP</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>CREATE ACCOUNT</h1>
+        <p>JOIN MY MIND BLOG!</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>SIGN UP</h2>
+
+            <% if (typeof error !== "undefined" && error) { %>
+                <p><%= error %></p>
+            <% } %>
+
+            <form action="/signup" method="POST">
+
+                <div>
+                    <label for="user_id">USERNAME</label>
+                    <input type="text" id="user_id" name="user_id" required>
+                </div>
+
+                <div>
+                    <label for="name">DISPLAY NAME</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div>
+                    <label for="password">PASSWORD</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit">CREATE ACCOUNT</button>
+
+            </form>
+
+            <p>Already a member? <a href="/signin">SIGN IN</a></p>
+        </section>
+    </main>
+
+</body>
+</html>

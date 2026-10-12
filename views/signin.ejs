@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SIGN IN</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>WELCOME BACK</h1>
+        <p>MY MIND BLOG</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>SIGN IN</h2>
+
+            <% if (typeof error !== "undefined" && error) { %>
+                <p><%= error %></p>
+            <% } %>
+
+            <form action="/signin" method="POST">
+
+                <div>
+                    <label for="user_id">USERNAME</label>
+                    <input type="text" id="user_id" name="user_id" required>
+                </div>
+
+                <div>
+                    <label for="password">PASSWORD</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit">SIGN IN</button>
+
+            </form>
+
+            <p>Not a member yet? <a href="/signup">SIGN UP</a></p>
+        </section>
+    </main>
+
+</body>
+</html>
