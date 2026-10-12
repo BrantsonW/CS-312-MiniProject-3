@@ -33,28 +33,39 @@ app.get("/", async (req, res) => {
 });
 
 //CREATING NEW BLOG POSTS
-app.post("/posts", (req, res) => {
-    //form information
-    const author = req.body.author;
+app.post("/posts", async (req, res) => {
+    //verify signed in status
+    if (!req.session.userId) {
+        return res.redirect("/signin");
+    }
+
+    //form var declarations
     const title = req.body.title;
     const content = req.body.content;
 
-    //new post object
-    const newPost = {
-        id: nextId,
-        author: author,
-        title: title,
-        content: content,
-        createdAt: new Date()
-    };
+    //verify title and content exist
+    if (!title?.trim() || !content?.trim()){
+        return res.status(400).send("A TITLE and CONTENT are required.");
+    }
 
-    //increment to the next id
-    nextId++;
+    try {
+        await db.query(
+            'INSERT INTO blogs (creator_name, creator_user_id, title, body) VALUES ($1, $2, $3, $4)',
+            [
+                req.session.userName,
+                req.session.userId,
+                title,
+                content
+            ]
+        );
+        red.redirect("/");
+    }
 
-    //add the new post
-    posts.push(newPost);
+    catch(error){
+        console.error(error);
+        res.status(500).send("Error creating post.")
+    }
 
-    res.redirect("/");
 });
 
 //EDITING BLOG POSTS

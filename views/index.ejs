@@ -46,36 +46,29 @@
     <main>
 
         <!-- CREATING POSTS -->
-        <section>
+        <% if (currentUser) { %>
 
-            <h2>CREATE A POST</h2>
+            <section>
+                <h2>CREATE A POST</h2>
 
-            <form action="/posts" method="POST">
+                <form action="/posts" method="POST">
 
-                <div>
-                    <label for="author">NAME</label>
+                    <div>
+                        <label for="title">TITLE</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
 
-                    <input type="text" id="author" name="author" required>
-                </div>
+                    <div>
+                        <label for="content">BLOG</label>
+                        <textarea id="content" name="content" rows="8" required></textarea>
+                    </div>
 
-                <div>
-                    <label for="title">TITLE</label>
+                    <button type="submit">POST</button>
 
-                    <input type="text" id="title" name="title" required>
-                </div>
+                </form>
+            </section>
 
-                <div>
-                    <label for="content">BLOG</label>
-
-                    <textarea id="content" name="content" rows="8" required></textarea>
-                    
-                </div>
-
-                <button type="submit">POST</button>
-
-            </form>
-
-        </section>
+        <% } %>
 
         <!-- VIEWING POSTS -->
 
