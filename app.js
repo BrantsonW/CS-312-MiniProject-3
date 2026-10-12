@@ -24,8 +24,12 @@ let posts = [];
 let nextId = 1;
 
 //HOMEPAGE
-app.get("/", (req, res) => {
-    res.render("index", { posts: posts });
+app.get("/", async (req, res) => {
+    let currentUser = null;
+
+    if (req.session.userId) {currentUser = {id: req.session.userId, name: req.session.userName};}
+
+    res.render("index", {posts: posts, currentUser: currentUser});
 });
 
 //CREATING NEW BLOG POSTS
@@ -202,7 +206,7 @@ app.post("/signin", async (req, res) => {
         console.error(error);
 
         res.status(500).render("signin", {
-            error: "Something went wrong."
+            error: "Error: Something went wrong."
         });
     }
 });
@@ -212,7 +216,7 @@ app.post("/logout", (req, res) => {
     req.session.destroy((error) => {
         if (error) {
             console.error(error);
-            return res.status(500).send("Could not sign out.");
+            return res.status(500).send("Unable to sign out.");
         }
 
         res.clearCookie("connect.sid");

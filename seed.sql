@@ -1,8 +1,8 @@
 INSERT INTO users (user_id, password, name)
 VALUES
-('branny', 'password123', 'Branny'),
-('alex', 'alex123', 'Alex'),
-('sam', 'sam123', 'Sam');
+('branny', '$2b$10$9z.ASgQ3.xu4Go1D1gD/WuiCuXHJNpmp5uUoQ0DYuzBFWVtk6x1Yq', 'Branny'),
+('alex', '$2b$10$D/lQqU0lmjx7W1DQFKD7Bu7SOYodH8TascsPL5KUaXZWrQIlfLXyG', 'Alex'),
+('sam', '$2b$10$D/lQqU0lmjx7W1DQFKD7Bu7SOYodH8TascsPL5KUaXZWrQIlfLXyG', 'Sam');
 
 INSERT INTO blogs
 (creator_name, creator_user_id, title, body, date_created)

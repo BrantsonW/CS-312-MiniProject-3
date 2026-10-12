@@ -14,9 +14,33 @@
 
     <header>
 
-    <h1>MY MIND BLOG</h1>
-    <p>WHATS ON YOUR MIND?!</p>
+        <h1>MY MIND BLOG</h1>
+        <p>WHATS ON YOUR MIND?!</p>
 
+        <% if (currentUser) { %>
+
+            <br>
+
+            <p>WELCOME, <%= currentUser.name %>!</p>
+
+            <br>
+
+            <form action="/logout" method="POST">
+                <button type="submit">LOG OUT</button>
+            </form>
+
+        <% } else { %>
+
+            <br>
+
+            <p>
+                <a href="/signin">SIGN IN</a>
+                |
+                <a href="/signup">SIGN UP</a>
+            </p>
+
+        <% } %>
+        
     </header>
 
     <main>
