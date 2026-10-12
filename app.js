@@ -94,5 +94,131 @@ app.post("/posts/:id/delete", (req, res) => {
     res.redirect("/");
 });
 
+//SIGNUP PAGE
+app.get("/signup", (req, res) => {
+    res.render("signup", { error: null });
+});
+
+//CREATING NEW USER ACCOUNTS
+app.post("/signup", async (req, res) => {
+    const { user_id, name, password } = req.body;
+
+    if (!user_id?.trim() || !name?.trim() || !password) {
+        return res.render("signup", {
+            error: "All fields are required."
+        });
+    }
+
+    try {
+        //Check if username already exists
+        const existingUser = await db.query(
+            "SELECT user_id FROM users WHERE user_id = $1",
+            [user_id]
+        );
+
+        if (existingUser.rows.length > 0) {
+            return res.render("signup", {
+                error: "Username already taken."
+            });
+        }
+
+        //Hash password before storing
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        //Add user to the database
+        await db.query(
+            "INSERT INTO users (user_id, password, name) VALUES ($1, $2, $3)",
+            [user_id, hashedPassword, name]
+        );
+
+        res.redirect("/signin");
+    }
+    catch (error) {
+        console.error(error);
+
+        res.status(500).render("signup", {
+            error: "Could not create account."
+        });
+    }
+});
+
+//SIGNIN PAGE
+app.get("/signin", (req, res) => {
+    res.render("signin", { error: null });
+});
+
+//SIGNING INTO EXISTING ACCOUNT
+app.post("/signin", async (req, res) => {
+    const { user_id, password } = req.body;
+
+    try {
+        //Find user by username
+        const result = await db.query(
+            "SELECT * FROM users WHERE user_id = $1",
+            [user_id]
+        );
+
+        const user = result.rows[0];
+
+        if (!user) {
+            return res.render("signin", {
+                error: "Incorrect username or password."
+            });
+        }
+
+        //Compare password with stored hash
+        const passwordMatches = await bcrypt.compare(
+            password || "",
+            user.password
+        );
+
+        if (!passwordMatches) {
+            return res.render("signin", {
+                error: "Incorrect username or password."
+            });
+        }
+
+        //Regenerate session after successful login
+        req.session.regenerate((error) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send("Session error.");
+            }
+
+            req.session.userId = user.user_id;
+            req.session.userName = user.name;
+
+            req.session.save((error) => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).send("Session error.");
+                }
+
+                res.redirect("/");
+            });
+        });
+    }
+    catch (error) {
+        console.error(error);
+
+        res.status(500).render("signin", {
+            error: "Something went wrong."
+        });
+    }
+});
+
+//SIGN OUT
+app.post("/logout", (req, res) => {
+    req.session.destroy((error) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send("Could not sign out.");
+        }
+
+        res.clearCookie("connect.sid");
+        res.redirect("/signin");
+    });
+});
+
 //START SERVER
 app.listen(PORT, () => {});
