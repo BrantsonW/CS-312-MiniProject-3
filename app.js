@@ -1,4 +1,7 @@
 const express = require("express");
+const session = require("express-session");
+const bcrypt = require("bcrypt");
+const db = require("./db");
 
 const app = express();
 const PORT = 3000;
@@ -6,6 +9,16 @@ const PORT = 3000;
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: "lax"
+    }
+}));
 
 let posts = [];
 let nextId = 1;
