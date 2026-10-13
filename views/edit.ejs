@@ -2,50 +2,61 @@
 <html lang="en">
 
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>EDIT POST</title>
-
     <link rel="stylesheet" href="/style.css">
+
 </head>
 
 <body>
 
     <header>
+
         <h1>EDIT POST</h1>
+        <p>MAKE YOUR CHANGES</p>
+
     </header>
 
-
     <main>
+        <section>
 
-    <form action="/posts/<%= post.id %>/edit" method="POST">
+            <form action="/posts/<%= post.blog_id %>/edit" method="POST">
 
-        <div>
-            <label for="author">EDIT NAME</label>
-            <input type="text" id="author" name="author" value="<%= post.author %>" required>
-        </div>
+                <div>
+                    <label for="title">EDIT TITLE</label>
 
-        <div>
-            <label for="title">EDIT TITLE</label>
-            <input type="text" id="title" name="title" value="<%= post.title %>" required>
-        </div>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        value="<%= post.title %>"
+                        required
+                    >
+                </div>
 
-        <div>
-            <label for="content">EDIT BLOG</label>
-            <textarea id="content" name="content" rows="8" required><%= post.content %></textarea>
-        </div>
+                <div>
+                    <label for="content">EDIT BLOG</label>
 
-        <button type="submit">SAVE</button>
-        
-    </form>
+                    <textarea
+                        id="content"
+                        name="content"
+                        rows="8"
+                        required
+                    ><%= post.body %></textarea>
+                </div>
 
-    <br>
+                <button type="submit">SAVE</button>
 
-    <button>
-    <a href="/">CANCEL</a>
-    </button>
+            </form>
 
+            <p>
+                <a href="/">CANCEL</a>
+            </p>
+
+        </section>
     </main>
 
 </body>

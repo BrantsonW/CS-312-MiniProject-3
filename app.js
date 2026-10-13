@@ -126,20 +126,53 @@ app.get("/posts/:id/edit", async (req, res) => {
 });
 
 //SAVING EDITTED BLOG POSTS
-app.post("/posts/:id/edit", (req, res) => {
-    //get the id from the url
+app.post("/posts/:id/edit", async (req, res) => {
+    //Verify signed in
+    if (!req.session.userId) {
+        return res.redirect("/signin");
+    }
+
     const id = Number(req.params.id);
+    const title = req.body.title;
+    const content = req.body.content;
 
-    //find the post with id
-    const post = posts.find(post => post.id === id);
+    if (!Number.isInteger(id) || id < 1) {
+        return res.status(400).send("Invalid post ID.");
+    }
 
-    //update the post info
-    post.author = req.body.author;
-    post.title = req.body.title;
-    post.content = req.body.content;
+    //Verify input
+    if (!title?.trim() || !content?.trim()) {
+        return res.status(400).send("Title and content are required.");
+    }
 
-    //send back to home
-    res.redirect("/");
+    try {
+        //Update only if ownership matches
+        const result = await db.query(
+            `UPDATE blogs
+             SET title = $1, body = $2
+             WHERE blog_id = $3 AND creator_user_id = $4
+             RETURNING blog_id`,
+            [
+                title,
+                content,
+                id,
+                req.session.userId
+            ]
+        );
+
+        //No matching post owned by this user
+        if (result.rows.length === 0) {
+            return res.status(403).send(
+                "Post not found or you do not have permission to edit it."
+            );
+        }
+
+        res.redirect("/");
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send("Error updating post.");
+    }
 });
 
 //DELETING BLOG POSTS
