@@ -77,32 +77,35 @@
             <h2>RECENT POSTS</h2>
 
             <% if (posts.length === 0) { %>
-                <p>
-                    no posts have been made
-                </p>
+                <p>no posts have been made</p>
             <% } %>
 
-            <% posts.forEach(post => { %> 
+            <% posts.forEach(post => { %>
                 <article>
+
                     <h3><%= post.title %></h3>
 
                     <p>
-                        By <strong><%= post.author %></strong>
+                        By <strong><%= post.creator_name %></strong>
                     </p>
 
                     <p>
-                        <%= post.createdAt.toLocaleString() %>
+                        <%= new Date(post.date_created).toLocaleString() %>
                     </p>
 
                     <p>
-                        <%= post.content %>
+                        <%= post.body %>
                     </p>
 
-                    <a href="/posts/<%= post.id %>/edit">EDIT</a>
+                    <% if (currentUser && currentUser.id === post.creator_user_id) { %>
 
-                    <form action ="/posts/<%= post.id %>/delete" method="POST">
-                        <button type="submit">DELETE</button>
-                    </form>
+                        <a href="/posts/<%= post.blog_id %>/edit">EDIT</a>
+
+                        <form action="/posts/<%= post.blog_id %>/delete" method="POST">
+                            <button type="submit">DELETE</button>
+                        </form>
+
+                    <% } %>
 
                 </article>
             <% }); %>

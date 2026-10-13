@@ -20,16 +20,33 @@ app.use(session({
     }
 }));
 
-let posts = [];
-let nextId = 1;
-
 //HOMEPAGE
 app.get("/", async (req, res) => {
     let currentUser = null;
 
-    if (req.session.userId) {currentUser = {id: req.session.userId, name: req.session.userName};}
+    if (req.session.userId) {
+        currentUser = {
+            id: req.session.userId,
+            name: req.session.userName
+        };
+    }
 
-    res.render("index", {posts: posts, currentUser: currentUser});
+    try {
+        //Retrieve all posts from PostgreSQL
+        const result = await db.query(
+            "SELECT * FROM blogs ORDER BY date_created DESC, blog_id DESC"
+        );
+
+        //Display posts on homepage
+        res.render("index", {
+            posts: result.rows,
+            currentUser: currentUser
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send("Error loading blog posts.");
+    }
 });
 
 //CREATING NEW BLOG POSTS
@@ -58,7 +75,7 @@ app.post("/posts", async (req, res) => {
                 content
             ]
         );
-        red.redirect("/");
+        res.redirect("/");
     }
 
     catch(error){
