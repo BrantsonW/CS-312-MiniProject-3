@@ -101,7 +101,10 @@
 
                         <a href="/posts/<%= post.blog_id %>/edit">EDIT</a>
 
-                        <form action="/posts/<%= post.blog_id %>/delete" method="POST">
+                        <form action="/posts/<%= post.blog_id %>/delete"
+                            method="POST"
+                            onsubmit="return confirm('Confirm?');">
+
                             <button type="submit">DELETE</button>
                         </form>
 

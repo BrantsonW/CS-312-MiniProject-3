@@ -113,7 +113,7 @@ app.get("/posts/:id/edit", async (req, res) => {
 
         //Check for ownership
         if (post.creator_user_id !== req.session.userId) {
-            return res.status(403).send("You cannot edit another user's post.");
+            return res.status(403).send("Unable to edit another user's post.");
         }
 
         //Load edit page
@@ -176,15 +176,40 @@ app.post("/posts/:id/edit", async (req, res) => {
 });
 
 //DELETING BLOG POSTS
-app.post("/posts/:id/delete", (req, res) => {
-    //get the id from url
+app.post("/posts/:id/delete", async (req, res) => {
+    //Verify sign in
+    if (!req.session.userId) {
+        return res.redirect("/signin");
+    }
+
     const id = Number(req.params.id);
 
-    //keep all posts but deleted one
-    posts = posts.filter(post => post.id !== id);
+    if (!Number.isInteger(id) || id < 1) {
+        return res.status(400).send("Invalid post ID.");
+    }
 
-    //send back to home
-    res.redirect("/");
+    try {
+        //Delete only posts owned by user
+        const result = await db.query(
+            `DELETE FROM blogs
+             WHERE blog_id = $1 AND creator_user_id = $2
+             RETURNING blog_id`,
+            [id, req.session.userId]
+        );
+
+        //no matching post owned by user
+        if (result.rows.length === 0) {
+            return res.status(403).send(
+                "Error: Post not found"
+            );
+        }
+
+        res.redirect("/");
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send("Error: unable to delete post.");
+    }
 });
 
 //SIGNUP PAGE
