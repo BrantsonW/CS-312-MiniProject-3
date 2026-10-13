@@ -86,15 +86,43 @@ app.post("/posts", async (req, res) => {
 });
 
 //EDITING BLOG POSTS
-app.get("/posts/:id/edit", (req, res) => {
-    //get the id from the url
+app.get("/posts/:id/edit", async (req, res) => {
+    //Verify sign in
+    if (!req.session.userId) {
+        return res.redirect("/signin");
+    }
+
     const id = Number(req.params.id);
 
-    //find the post with id
-    const post = posts.find(post => post.id === id);
+    if (!Number.isInteger(id) || id < 1) {
+        return res.status(400).send("Invalid post ID.");
+    }
 
-    //render that post on the edit page
-    res.render("edit", { post: post });
+    try {
+        //Find the post in PostgreSQL
+        const result = await db.query(
+            "SELECT * FROM blogs WHERE blog_id = $1",
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).send("Post not found.");
+        }
+
+        const post = result.rows[0];
+
+        //Check for ownership
+        if (post.creator_user_id !== req.session.userId) {
+            return res.status(403).send("You cannot edit another user's post.");
+        }
+
+        //Load edit page
+        res.render("edit", { post: post });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send("Error loading post.");
+    }
 });
 
 //SAVING EDITTED BLOG POSTS
@@ -154,6 +182,7 @@ app.post("/signup", async (req, res) => {
             });
         }
 
+        //HASHING PASSWORD -----------------------------------------
         //Hash password before storing
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -198,6 +227,7 @@ app.post("/signin", async (req, res) => {
             });
         }
 
+        //HASHING CHECK -----------------------------------------
         //Compare password with stored hash
         const passwordMatches = await bcrypt.compare(
             password || "",
